@@ -14,41 +14,24 @@ block_stats = {
     2: {'collide': False, 'flip': [False, False], 'hitbox': (32, 32), 'tileset': True},
     3: {'collide': True, 'flip': [False, False], 'hitbox': (32, 32), 'tileset': True},
     4: {'collide': True, 'flip': [False, False], 'hitbox': (32, 32), 'tileset': True},
-    5: {'collide': False, 'flip': [False, False], 'hitbox': (32, 64), 'tileset': False},
-    6: {'collide': False, 'flip': [False, False], 'hitbox': (48*2,48*2), 'tileset': False},
-    7: {'collide': False, 'flip': [False, False], 'hitbox': (48*2,48*2), 'tileset': False},
-    8: {'collide': False, 'flip': [False, False], 'hitbox': (32, 32), 'tileset': False},
-    9: {'collide': False, 'flip': [False, False], 'hitbox': (32, 64), 'tileset': False},
-    10: {'collide': True, 'flip': [False, False], 'hitbox': (32, 32), 'tileset': True},
-    11: {'collide': False, 'flip': [False, False], 'hitbox': (48*2, 48*2), 'tileset': False},
-    12: {'collide': False, 'flip': [False, False], 'hitbox': (32, 32), 'tileset': False},
-    13: {'collide': False, 'flip': [False, False], 'hitbox': (32, 32), 'tileset': False},
-    14: {'collide': False, 'flip': [False, False], 'hitbox': (32, 64), 'tileset': False},
-    15: {'collide': False, 'flip': [False, False], 'hitbox': (32, 32), 'tileset': False},
-    16: {'collide': False, 'flip': [False, False], 'hitbox': (32, 32), 'tileset': False},
-    17: {'collide': False, 'flip': [False, False], 'hitbox': (32, 32), 'tileset': False},
-    18: {'collide': True, 'flip': [False, False], 'hitbox': (32, 32), 'tileset': True},
+    5: {'collide': True, 'flip': [False, False], 'hitbox': (32, 32), 'tileset': True},
+    6: {'collide': True, 'flip': [False, False], 'hitbox': (32, 32), 'tileset': True},
+    7: {'collide': True, 'flip': [False, False], 'hitbox': (32, 32), 'tileset': True},
+    8: {'collide': False, 'flip': [False, False], 'hitbox': (48, 48), 'tileset': False},
+    9: {'collide': False, 'flip': [False, False], 'hitbox': (48, 48), 'tileset': False},
 }
 
 name_id = {
     1: 'Albasee',
     2: 'AlbaseeBG',
-    3: 'Vulakit',
-    4: 'VulakitBasalt',
-    5: 'Vulakitplantsmall1',
-    6: 'Vulakitplant1',
-    7: 'Vulakitplant2',
-    8: 'Vulakitplantsmallhanging',
-    9: 'Vulakitcacti',
-    10: 'AlbaseeHedrol',
-    11: 'Albaseeplant1',
-    12: 'Albaseeplantsmall1',
-    13: 'Albaseeprop1',
-    14: 'Albaseeprop2',
-    15: 'Albaseeprop3',
-    16: 'Albaseeprop4',
-    17: 'Albaseeprop5',
-    18: 'VulakitAuramite',
+    3: 'AlbaseeHedrol',
+    4: 'AlbaseeGlaicer',
+    5: 'Vulakit',
+    6: 'VulakitBasalt',
+    7: 'VulakitAuramite',
+    8: 'Albasee',
+    9: 'Vulakit',
+    
 }
 
 font = pg.font.SysFont('helvetica', 30)
@@ -76,6 +59,8 @@ class LevelEditor:
         Export: export level into JSON
         Save: Save level in bytes
         Load: Load bytes into level""")
+        self.counter = 0
+        self.counters = {}
         self.running = True
         self.fps = 60
         self.tilemap_size = (30, 20)
@@ -96,34 +81,52 @@ class LevelEditor:
 
         self.textures['Albasee'] = []
         self.textures['AlbaseeBG'] = []
+        self.textures['AlbaseeGlaicer'] = []
         self.textures['Vulakit'] = []
         self.textures['VulakitBasalt'] = []
         self.textures['AlbaseeHedrol'] = []
         self.textures['VulakitAuramite'] = []
 
         self.props_textures = {}
+        self.props_textures['Albasee'] = []
+        self.props_textures['Vulakit'] = []
 
-        for name in sorted(os.listdir(os.path.join(os.getcwd(), 'tiles', 'props')), key=len):
-            self.props_textures[name[:-4]] = pg.image.load(os.path.join(os.getcwd(), 'tiles', 'props', name)).convert_alpha()
+        for name in sorted(os.listdir('./tiles/props'), key=len):
+            if 'Albasee' in name:
+                self.props_textures['Albasee'].append(pg.image.load(os.path.join(os.getcwd(), 'tiles', 'props', name)).convert_alpha())
+                self.props_textures['Albasee'][-1].set_colorkey((0, 0, 0))
+            elif 'Vulakit' in name:
+                self.props_textures['Vulakit'].append(pg.image.load(os.path.join(os.getcwd(), 'tiles', 'props', name)).convert_alpha())
+                self.props_textures['Vulakit'][-1].set_colorkey((0, 0, 0))
 
         for name in sorted(os.listdir(os.path.join(os.getcwd(), 'tiles')), key=len):
             if 'AlbaseeBG' in name:
                 self.textures['AlbaseeBG'].append(pg.image.load(os.path.join(os.getcwd(), 'tiles', name)).convert_alpha())
+                self.textures['AlbaseeBG'][-1].set_colorkey((0, 0, 0))
 
             elif 'AlbaseeHedrol' in name:
                 self.textures['AlbaseeHedrol'].append(pg.image.load(os.path.join(os.getcwd(), 'tiles', name)).convert_alpha())
+                self.textures['AlbaseeHedrol'][-1].set_colorkey((0, 0, 0))
+
+            elif 'AlbaseeGlaicer' in name:
+                self.textures['AlbaseeGlaicer'].append(pg.image.load(os.path.join(os.getcwd(), 'tiles', name)).convert_alpha())
+                self.textures['AlbaseeGlaicer'][-1].set_colorkey((0, 0, 0))
 
             elif 'Albasee' in name:
                 self.textures['Albasee'].append(pg.image.load(os.path.join(os.getcwd(), 'tiles', name)).convert_alpha())
+                self.textures['Albasee'][-1].set_colorkey((0, 0, 0))
     
             elif 'VulakitBasalt' in name:
                 self.textures['VulakitBasalt'].append(pg.image.load(os.path.join(os.getcwd(), 'tiles', name)).convert_alpha())
+                self.textures['VulakitBasalt'][-1].set_colorkey((0, 0, 0))
 
             elif 'VulakitAuramite' in name:
                 self.textures['VulakitAuramite'].append(pg.image.load(os.path.join(os.getcwd(), 'tiles', name)).convert_alpha())
+                self.textures['VulakitAuramite'][-1].set_colorkey((0, 0, 0))
 
             elif 'Vulakit' in name:
                 self.textures['Vulakit'].append(pg.image.load(os.path.join(os.getcwd(), 'tiles', name)).convert_alpha())
+                self.textures['Vulakit'][-1].set_colorkey((0, 0, 0))
 
         create_button(self.buttons, pg.Rect(10, 10, 100, 50), 'Export', [self.export, self.get_tilemaps])
         create_button(self.buttons, pg.Rect(10, 70, 100, 50), 'Save', [self.save, self.get_tilemaps])
@@ -134,22 +137,13 @@ class LevelEditor:
 
         create_button(self.buttons, pg.Rect(150, 10, 100, 50), '', [self.select_block, 1], self.textures['Albasee'][15])
         create_button(self.buttons, pg.Rect(250, 10, 100, 50), '', [self.select_block, 2], self.textures['AlbaseeBG'][15])
-        create_button(self.buttons, pg.Rect(350, 10, 100, 50), '', [self.select_block, 3], self.textures['Vulakit'][15])
-        create_button(self.buttons, pg.Rect(450, 10, 100, 50), '', [self.select_block, 4], self.textures['VulakitBasalt'][15])
-        create_button(self.buttons, pg.Rect(550, 10, 100, 50), '', [self.select_block, 5], self.props_textures['Vulakitplantsmall1'])
-        create_button(self.buttons, pg.Rect(650, 10, 100, 50), '', [self.select_block, 6], self.props_textures['Vulakitplant1'])
-        create_button(self.buttons, pg.Rect(750, 10, 100, 50), '', [self.select_block, 7], self.props_textures['Vulakitplant2'])
-        create_button(self.buttons, pg.Rect(850, 10, 100, 50), '', [self.select_block, 8], self.props_textures['Vulakitplantsmallhanging'])
-        create_button(self.buttons, pg.Rect(150, 60, 100, 50), '', [self.select_block, 9], self.props_textures['Vulakitcacti'])
-        create_button(self.buttons, pg.Rect(250, 60, 100, 50), '', [self.select_block, 10], self.textures['AlbaseeHedrol'][15])
-        create_button(self.buttons, pg.Rect(350, 60, 100, 50), '', [self.select_block, 11], self.props_textures['Albaseeplant1'])
-        create_button(self.buttons, pg.Rect(450, 60, 100, 50), '', [self.select_block, 12], self.props_textures['Albaseeplantsmall1'])
-        create_button(self.buttons, pg.Rect(550, 60, 100, 50), '', [self.select_block, 13], self.props_textures['Albaseeprop1'])
-        create_button(self.buttons, pg.Rect(650, 60, 100, 50), '', [self.select_block, 14], self.props_textures['Albaseeprop2'])
-        create_button(self.buttons, pg.Rect(750, 60, 100, 50), '', [self.select_block, 15], self.props_textures['Albaseeprop3'])
-        create_button(self.buttons, pg.Rect(850, 60, 100, 50), '', [self.select_block, 16], self.props_textures['Albaseeprop4'])
-        create_button(self.buttons, pg.Rect(150, 110, 100, 50), '', [self.select_block, 17], self.props_textures['Albaseeprop5'])
-        create_button(self.buttons, pg.Rect(250, 110, 100, 50), '', [self.select_block, 18], self.textures['VulakitAuramite'][15])
+        create_button(self.buttons, pg.Rect(350, 10, 100, 50), '', [self.select_block, 3], self.textures['AlbaseeHedrol'][15])
+        create_button(self.buttons, pg.Rect(450, 10, 100, 50), '', [self.select_block, 4], self.textures['AlbaseeGlaicer'][15])
+        create_button(self.buttons, pg.Rect(150, 60, 133, 50), '', [self.select_block, 5], self.textures['Vulakit'][15])
+        create_button(self.buttons, pg.Rect(283, 60, 134, 50), '', [self.select_block, 6], self.textures['VulakitBasalt'][15])
+        create_button(self.buttons, pg.Rect(417, 60, 133, 50), '', [self.select_block, 7], self.textures['VulakitAuramite'][15])
+        create_button(self.buttons, pg.Rect(150, 110, 200, 50), '', [self.select_block, 8], self.props_textures['Albasee'][-5])
+        create_button(self.buttons, pg.Rect(350, 110, 200, 50), '', [self.select_block, 9], self.props_textures['Vulakit'][-5])
 
     def select_block(self, type):
         self.type = type
@@ -204,7 +198,7 @@ class LevelEditor:
         block_ids = {}
         tilemaps = {}
         for tilemap in sorted(objects):
-            tilemap_ = self.convert_to_tilemap(objects[tilemap])
+            tilemap_ = self.convert_to_tilemap(objects[tilemap]) # JUST FRIKN USE DEEPCOPY
             tilemaps[tilemap] = tilemap_
             for tile in tilemap_:
                 tile_data = tilemap_[tile]
@@ -220,10 +214,10 @@ class LevelEditor:
                     texture_id = 0
 
                     if block_stats[tile_data[0]]['tileset']:
-                        texture_id = get_neighboring_tiles(tilemap_, tile, tile_data[0])
+                        texture_id = get_neighboring_tiles(tilemap_, tile)
                         texture = self.textures[name][texture_id]
                     else:
-                        texture = self.props_textures[name]
+                        texture = self.props_textures[name][self.counters[tile]%len(self.props_textures[name])]
 
                     surface = pg.transform.flip(pg.transform.scale(texture, tile_data[3]), tile_data[2][0], tile_data[2][1])
                     self.render_list.append([surface, (x*32, y*32), tilemap])
@@ -255,6 +249,12 @@ class LevelEditor:
 
                     if event.key == pg.K_a and self.type - 1 in block_stats:
                         self.type -= 1
+                    
+                    if event.key == pg.K_q:
+                        self.counter += 1
+
+                    if event.key == pg.K_e:
+                        self.counter -= 1
 
                     if event.key == pg.K_t:
                         self.export(self.tilemaps[self.tilemap_id])
@@ -325,6 +325,8 @@ class LevelEditor:
 
                 if pg.mouse.get_pressed()[0] and not [self.type, (mx, my), collide, flip, hitbox, 0] in self.tilemaps[self.tilemap_id] and not (pg.key.get_pressed()[pg.K_LSHIFT] or pg.key.get_pressed()[pg.K_LCTRL]):
                     self.tilemaps[self.tilemap_id].append([self.type, (mx, my), collide, flip, hitbox, 0])
+                    print(str(int(mx//self.block_size))+';'+str(int(my//self.block_size)))
+                    self.counters[str(int(mx//self.block_size))+';'+str(int(my//self.block_size))] = self.counter
                     self.update_render(self.tilemaps)
 
                 elif pg.mouse.get_pressed()[2] or (pg.key.get_pressed()[pg.K_LSHIFT] and pg.mouse.get_pressed()[0]):
