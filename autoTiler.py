@@ -3,6 +3,18 @@ import os
 import pygame as pg
 import random
 
+block_stats = {
+    1: {'collide': True, 'flip': [False, False], 'hitbox': (32, 32), 'tileset': True},
+    2: {'collide': False, 'flip': [False, False], 'hitbox': (32, 32), 'tileset': True},
+    3: {'collide': True, 'flip': [False, False], 'hitbox': (32, 32), 'tileset': True},
+    4: {'collide': True, 'flip': [False, False], 'hitbox': (32, 32), 'tileset': True},
+    5: {'collide': True, 'flip': [False, False], 'hitbox': (32, 32), 'tileset': True},
+    6: {'collide': True, 'flip': [False, False], 'hitbox': (32, 32), 'tileset': True},
+    7: {'collide': True, 'flip': [False, False], 'hitbox': (32, 32), 'tileset': True},
+    8: {'collide': False, 'flip': [False, False], 'hitbox': (48, 48), 'tileset': False},
+    9: {'collide': False, 'flip': [False, False], 'hitbox': (48, 48), 'tileset': False},
+}
+
 hash_map = {
     (0, 0, 0,
     0, 1, 1,
@@ -55,7 +67,7 @@ hash_map = {
 }
 
 def check(tilemap, pos):
-    if pos in tilemap and tilemap[pos]:
+    if pos in tilemap and tilemap[pos] and block_stats[tilemap[pos][0]]['tileset']:
         return 1
     return 0
 
