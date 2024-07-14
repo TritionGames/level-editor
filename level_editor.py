@@ -10,15 +10,15 @@ from autoTiler import *
 pg.init()
 
 block_stats = {
-    1: {'collide': True, 'flip': [False, False], 'hitbox': (32, 32), 'tileset': True},
-    2: {'collide': False, 'flip': [False, False], 'hitbox': (32, 32), 'tileset': True},
-    3: {'collide': True, 'flip': [False, False], 'hitbox': (32, 32), 'tileset': True},
-    4: {'collide': True, 'flip': [False, False], 'hitbox': (32, 32), 'tileset': True},
-    5: {'collide': True, 'flip': [False, False], 'hitbox': (32, 32), 'tileset': True},
-    6: {'collide': True, 'flip': [False, False], 'hitbox': (32, 32), 'tileset': True},
-    7: {'collide': True, 'flip': [False, False], 'hitbox': (32, 32), 'tileset': True},
-    8: {'collide': False, 'flip': [False, False], 'hitbox': (48, 48), 'tileset': False},
-    9: {'collide': False, 'flip': [False, False], 'hitbox': (48, 48), 'tileset': False},
+    1: {'collide': True, 'flip': [False, False], 'hitbox': (32, 32), 'tileset': True, 'offset':(0, 0)},
+    2: {'collide': False, 'flip': [False, False], 'hitbox': (32, 32), 'tileset': True, 'offset':(0, 0)},
+    3: {'collide': True, 'flip': [False, False], 'hitbox': (32, 32), 'tileset': True, 'offset':(0, 0)},
+    4: {'collide': True, 'flip': [False, False], 'hitbox': (32, 32), 'tileset': True, 'offset':(0, 0)},
+    5: {'collide': True, 'flip': [False, False], 'hitbox': (32, 32), 'tileset': True, 'offset':(0, 0)},
+    6: {'collide': True, 'flip': [False, False], 'hitbox': (32, 32), 'tileset': True, 'offset':(0, 0)},
+    7: {'collide': True, 'flip': [False, False], 'hitbox': (32, 32), 'tileset': True, 'offset':(0, 0)},
+    8: {'collide': False, 'flip': [False, False], 'hitbox': (96, 96), 'tileset': False, 'offset':(-64, -64)},
+    9: {'collide': False, 'flip': [False, False], 'hitbox': (96, 96), 'tileset': False, 'offset':(-64, -64)},
 }
 
 name_id = {
@@ -218,9 +218,12 @@ class LevelEditor:
                         texture = self.textures[name][texture_id]
                     else:
                         texture = self.props_textures[name][self.counters[tile]%len(self.props_textures[name])]
+                        
+                    hitbox = block_stats[tile_data[0]]['hitbox']
+                    Offset = block_stats[tile_data[0]]['offset']
 
                     surface = pg.transform.flip(pg.transform.scale(texture, tile_data[3]), tile_data[2][0], tile_data[2][1])
-                    self.render_list.append([surface, (x*32, y*32), tilemap])
+                    self.render_list.append([surface, (x*32+Offset[0], y*32+Offset[1]), tilemap])
                     block_ids[tile] = name+(str(texture_id) if block_stats[tile_data[0]]['tileset'] else ''), tilemap
 
         return block_ids, tilemaps
@@ -319,7 +322,7 @@ class LevelEditor:
                     self.display.blit(button['image'], (rectangle.center[0] - width/2, rectangle.center[1] - height/2))
 
             if not on_mouse:
-                collide, flip, hitbox, x = block_stats[self.type].values()
+                collide, flip, hitbox, x, xt = block_stats[self.type].values()
 
                 flip = (self.flipx, self.flipy)
 
